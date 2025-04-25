@@ -1,6 +1,9 @@
 using Firebase.Auth;
+using Firebase.Database;
+using Firebase.Extensions;
 using System;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class AuthStateHandler : MonoBehaviour
 {
@@ -15,6 +18,7 @@ public class AuthStateHandler : MonoBehaviour
         _panelAuth = GameObject.Find("PanelAuth");
         _panelScore = GameObject.Find("PanelScore");
 
+        _panelAuth.SetActive(true);
         _panelScore.SetActive(false);
     }
 
@@ -27,15 +31,42 @@ public class AuthStateHandler : MonoBehaviour
     {
         if (FirebaseAuth.DefaultInstance.CurrentUser != null)
         {
-            _panelAuth.SetActive(false);
-            _panelScore.SetActive(true);
-            Debug.Log(FirebaseAuth.DefaultInstance.CurrentUser.Email);
+            Invoke("SetAuth", 2f);
+            setOnline();
         }
         else
         {
             _panelAuth.SetActive(true);
             _panelScore.SetActive(false);
         }
+    }
+
+    private void  SetAuth()
+    {
+        _panelAuth.SetActive(false); 
+        _panelScore.SetActive(true); 
+    }
+
+    private void setOnline()
+    {
+        var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference; 
+        var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId; 
+
+        FirebaseDatabase.DefaultInstance
+        .GetReference("users/" + userId + "/username")
+        .GetValueAsync().ContinueWithOnMainThread(task => 
+        {
+            if(task.IsFaulted)
+            {
+                // Handle the error...
+            }
+            else if(task.IsCompleted)
+            {
+                DataSnapshot snapshot = task.Result;
+                string username = snapshot.Value.ToString();
+                mDatabaseRef.Child("users-online").Child(userId).SetValueAsync(username);
+            }
+        });
     }
 
 }
