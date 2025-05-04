@@ -32,7 +32,7 @@ public class AuthStateHandler : MonoBehaviour
         if (FirebaseAuth.DefaultInstance.CurrentUser != null)
         {
             Invoke("SetAuth", 2f);
-            setOnline();
+            SetOnline();
         }
         else
         {
@@ -43,11 +43,12 @@ public class AuthStateHandler : MonoBehaviour
 
     private void  SetAuth()
     {
+        //User already logged in
         _panelAuth.SetActive(false); 
         _panelScore.SetActive(true); 
     }
 
-    private void setOnline()
+    private void SetOnline()
     {
         var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference; 
         var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId; 

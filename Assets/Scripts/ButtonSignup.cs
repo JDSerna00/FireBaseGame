@@ -1,4 +1,5 @@
 using Firebase.Auth;
+using Firebase.Database;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -35,7 +36,7 @@ public class ButtonSignup : MonoBehaviour
         var auth = FirebaseAuth.DefaultInstance;
 
         var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
-
+        string username = GameObject.Find("InputFieldUsername").GetComponent<TMP_InputField>().text;
         yield return new WaitUntil(() => registerTask.IsCompleted);
 
         if (registerTask.IsCanceled)
@@ -52,6 +53,12 @@ public class ButtonSignup : MonoBehaviour
 
             // Firebase user has been created.
             AuthResult result = registerTask.Result;
+            FirebaseDatabase.DefaultInstance.RootReference  
+                .Child("users")
+                .Child(result.User.UserId)
+                .Child("username")
+                .SetValueAsync(username);
+            //Missing validations for username and email
             Debug.LogFormat("Firebase user created successfully: {0} ({1})",
                 result.User.DisplayName, result.User.UserId);
         }
