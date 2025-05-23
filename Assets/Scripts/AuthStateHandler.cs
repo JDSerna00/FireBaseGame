@@ -101,6 +101,7 @@ public class AuthStateHandler : MonoBehaviour
                 {
                     DataSnapshot snapshot = task.Result;
                     string username = snapshot.Value?.ToString();
+                    PlayerPrefs.SetString("username", username); 
                     if (!string.IsNullOrEmpty(username))
                     {
                         mDatabaseRef.Child("users-online").Child(userId).SetValueAsync(username);
