@@ -103,10 +103,13 @@ public class UsersOnline : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-        var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-        mDatabaseRef.Child("users-online").Child(userId).SetValueAsync(null);
-        Debug.Log("User logged out: " + userId); //Debug log to check if the user is logged out
+        if (FirebaseAuth.DefaultInstance.CurrentUser != null)
+        {
+            var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
+            var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
+            mDatabaseRef.Child("users-online").Child(userId).SetValueAsync(null);
+            Debug.Log("User logged out: " + userId); //Debug log to check if the user is logged out
+        }
     }
     
 }

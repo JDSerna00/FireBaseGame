@@ -21,10 +21,11 @@ public class ButtonLogin : MonoBehaviour
         _loginButton = GetComponent<Button>();
         _emailInputField = GameObject.Find("InputFieldEmail").GetComponent<TMP_InputField>();
         _passwordInputField = GameObject.Find("InputFieldPassword").GetComponent<TMP_InputField>(); ;
+
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {        
+    {
         _loginButton.onClick.AddListener(RegisterUser);
     }
 
@@ -33,9 +34,10 @@ public class ButtonLogin : MonoBehaviour
     {
         var auth = FirebaseAuth.DefaultInstance;
         string email = _emailInputField.text;
-        string password = _passwordInputField.text; 
+        string password = _passwordInputField.text;
 
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task =>
+        {
             if (task.IsCanceled)
             {
                 Debug.LogError("SignInWithEmailAndPasswordAsync was canceled.");
@@ -53,10 +55,4 @@ public class ButtonLogin : MonoBehaviour
         });
     }
 
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

@@ -35,6 +35,7 @@ public class AuthStateHandler : MonoBehaviour
             }
         }
         FirebaseAuth.DefaultInstance.StateChanged += HandleStateChanged;
+
     }
 
     void OnDestroy()
@@ -101,7 +102,7 @@ public class AuthStateHandler : MonoBehaviour
                 {
                     DataSnapshot snapshot = task.Result;
                     string username = snapshot.Value?.ToString();
-                    PlayerPrefs.SetString("username", username); 
+                    PlayerPrefs.SetString("username", username);
                     if (!string.IsNullOrEmpty(username))
                     {
                         mDatabaseRef.Child("users-online").Child(userId).SetValueAsync(username);
@@ -110,4 +111,5 @@ public class AuthStateHandler : MonoBehaviour
                 }
             });
     }
+    
 }
