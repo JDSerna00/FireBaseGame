@@ -1,5 +1,6 @@
 using Firebase.Auth;
 using Firebase.Database;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -7,18 +8,18 @@ using UnityEngine.UI;
 
 public class ButtonSignup : MonoBehaviour
 {
-    [SerializeField]
-    private Button _registrationButton;
-
+    FirebaseAuth auth;
+    [SerializeField] private Button _registrationButton;
     private Coroutine _registrationCoroutine;
 
     private void Reset()
     {
         _registrationButton = GetComponent<Button>();
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
+        auth = FirebaseAuth.DefaultInstance;
         _registrationButton.onClick.AddListener(HandleRegistrationButtonClick);
     }
 
@@ -28,46 +29,29 @@ public class ButtonSignup : MonoBehaviour
         string password = GameObject.Find("InputFieldPassword").GetComponent<TMP_InputField>().text;
 
         _registrationCoroutine = StartCoroutine(RegisterUser(email, password));
-
     }
 
     IEnumerator RegisterUser(string email, string password)
     {
+        string username = GameObject.Find("InputFieldUsername").GetComponent<TMP_InputField>().text; 
         var auth = FirebaseAuth.DefaultInstance;
-
         var registerTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
-        string username = GameObject.Find("InputFieldUsername").GetComponent<TMP_InputField>().text;
-        yield return new WaitUntil(() => registerTask.IsCompleted);
 
+        yield return new WaitUntil(() => registerTask.IsCompleted);
         if (registerTask.IsCanceled)
         {
-            Debug.LogError("CreateUserWithEmailAndPasswordAsync was canceled.");
-
+            Debug.LogError("CreateruserWithEmailAndPasswordAsync was canceled");
         }
         else if (registerTask.IsFaulted)
         {
-            Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + registerTask.Exception);
+            Debug.LogError("CreateruserWithEmailAndPasswordAsync encountered an error" + registerTask.Exception);
         }
         else
         {
-
-            // Firebase user has been created.
             AuthResult result = registerTask.Result;
-            FirebaseDatabase.DefaultInstance.RootReference  
-                .Child("users")
-                .Child(result.User.UserId)
-                .Child("username")
-                .SetValueAsync(username);
-            //Missing validations for username and email
-            Debug.LogFormat("Firebase user created successfully: {0} ({1})",
-                result.User.DisplayName, result.User.UserId);
+            FirebaseDatabase.DefaultInstance.RootReference.Child("users").Child(result.User.UserId).Child("username").Child(username); 
+            Debug.LogFormat("Firebase user created sucessfully: {0} ({1})", result.User.DisplayName, result.User.UserId); 
         }
     }
 
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

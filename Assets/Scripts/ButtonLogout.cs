@@ -5,6 +5,9 @@ using UnityEngine.EventSystems;
 
 public class ButtonLogout : MonoBehaviour
 {
+    [SerializeField] private GameObject loginPanel;
+    [SerializeField] private GameObject scorePanel; 
+
     public void Logout()
     {
         var auth = FirebaseAuth.DefaultInstance;
@@ -20,6 +23,9 @@ public class ButtonLogout : MonoBehaviour
 
             auth.SignOut();
             Debug.Log("User logged out: " + userId);
+            
+            scorePanel.SetActive(false);
+            loginPanel.SetActive(true);
         }
         else
         {

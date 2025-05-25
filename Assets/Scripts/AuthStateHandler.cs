@@ -7,42 +7,38 @@ using System;
 
 public class AuthStateHandler : MonoBehaviour
 {
-    [SerializeField]
-    GameObject _panelAuth;
-
-    [SerializeField]
-    GameObject _panelScore;
+    [SerializeField] private GameObject _panelScore;
+    private FirebaseAuth auth;
 
     void Awake()
     {
-        // Initialize panel references (ensure they exist in the scene with correct names)
-        _panelAuth = GameObject.Find("PanelAuth");
-        _panelScore = GameObject.Find("PanelScore");
+        auth = FirebaseAuth.DefaultInstance;
+        auth.StateChanged += HandleStateChanged;
 
-        if (_panelAuth != null) _panelAuth.SetActive(true);
-        if (_panelScore != null) _panelScore.SetActive(false);
-    }
-
-    void Start()
-    {
-        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
-
-        foreach (GameObject obj in allObjects)
-        {
-            if (obj.name.Contains("(Clone)")) // Checks for Unity's default clone suffix
-            {
-                Destroy(obj);
-            }
-        }
-        FirebaseAuth.DefaultInstance.StateChanged += HandleStateChanged;
-
+        // Forzamos una primera llamada por si ya hay un usuario activo al iniciar
+        HandleStateChanged(this, null);
     }
 
     void OnDestroy()
     {
-        // Clean up event listener
-        FirebaseAuth.DefaultInstance.StateChanged -= HandleStateChanged;
+        if (auth != null)
+        {
+            auth.StateChanged -= HandleStateChanged;
+        }
     }
+
+    // void Start()
+    // {
+    //     GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+
+    //     foreach (GameObject obj in allObjects)
+    //     {
+    //         if (obj.name.Contains("(Clone)")) // Checks for Unity's default clone suffix
+    //         {
+    //             Destroy(obj);
+    //         }
+    //     }
+    // }
 
     void Update()
     {
@@ -61,25 +57,21 @@ public class AuthStateHandler : MonoBehaviour
         if (FirebaseAuth.DefaultInstance.CurrentUser != null)
         {
             Invoke("SetAuth", 2f);
-            SetOnline();
+            Invoke("SetOnline", 2f);
+            Debug.Log("Usuario autenticado");
         }
         else
         {
-            if (_panelAuth != null) _panelAuth.SetActive(true);
-            if (_panelScore != null) _panelScore.SetActive(false);
+            Debug.Log("Usuario no autenticado.");
+            _panelScore.SetActive(false); 
+            // Puedes decidir mostrar login aquí si lo deseas
         }
     }
 
     private void SetAuth()
     {
-        if (_panelAuth != null) _panelAuth.SetActive(false);
+        // Activar solo el panel de Score
         if (_panelScore != null) _panelScore.SetActive(true);
-
-        var currentUser = FirebaseAuth.DefaultInstance.CurrentUser;
-        if (currentUser != null)
-        {
-            Debug.Log("User authenticated: " + currentUser.UserId);
-        }
     }
 
     private void SetOnline()

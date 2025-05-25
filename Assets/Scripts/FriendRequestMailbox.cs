@@ -1,10 +1,13 @@
 using System;
 using Firebase.Auth;
 using Firebase.Database;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FriendRequestMailbox : MonoBehaviour
 {
+    [SerializeField] private GameObject friendRequestItemPrefab;
+    [SerializeField] private Transform friendRequestPanelContent;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void OnEnable()
     {
@@ -13,7 +16,7 @@ public class FriendRequestMailbox : MonoBehaviour
         {
             var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
             var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-            var reference = mDatabaseRef.Child("users").Child(userId).Child("friendRequest");
+            var reference = mDatabaseRef.Child("users").Child(userId).Child("friendRequests");
             reference.ChildAdded += HandleChildAdded;
         }
     }
@@ -25,7 +28,7 @@ public class FriendRequestMailbox : MonoBehaviour
         {
             var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
             var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-            var reference = mDatabaseRef.Child("users").Child(userId).Child("friendRequest");
+            var reference = mDatabaseRef.Child("users").Child(userId).Child("friendRequests");
             reference.ChildAdded -= HandleChildAdded;
         }
     }
@@ -38,11 +41,15 @@ public class FriendRequestMailbox : MonoBehaviour
             Debug.LogError(args.DatabaseError.Message);
             return;
         }
-        DataSnapshot snapshot = args.Snapshot;
-        string friendId = snapshot.Key;
-        string friendUsername = snapshot.Value.ToString();
+        string friendUserId = args.Snapshot.Key;
+        Debug.Log("Solicitud de amistad recibida de: " + friendUserId);
 
-        Debug.Log("Tiene una solicitud de amistad de" + friendUsername);
+        GameObject newRequest = Instantiate(friendRequestItemPrefab, friendRequestPanelContent);
+        newRequest.transform.localScale = Vector3.one;
+        Debug.Log("Instanciado"); 
+        var requestUI = newRequest.GetComponent<FriendRequestUIItem>();
+        requestUI.Initialize(friendUserId, friendRequestPanelContent, friendRequestItemPrefab);
+
     }
 
 }

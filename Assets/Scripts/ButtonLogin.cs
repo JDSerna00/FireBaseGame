@@ -29,7 +29,6 @@ public class ButtonLogin : MonoBehaviour
         _loginButton.onClick.AddListener(RegisterUser);
     }
 
-
     void RegisterUser()
     {
         var auth = FirebaseAuth.DefaultInstance;
