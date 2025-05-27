@@ -23,7 +23,12 @@ public class ButtonLogout : MonoBehaviour
 
             auth.SignOut();
             Debug.Log("User logged out: " + userId);
-            
+            var usersOnline = FindFirstObjectByType<UsersOnline>();
+            if (usersOnline != null)
+            {
+                usersOnline.enabled = false; // Disable UsersOnline script
+            }
+
             scorePanel.SetActive(false);
             loginPanel.SetActive(true);
         }

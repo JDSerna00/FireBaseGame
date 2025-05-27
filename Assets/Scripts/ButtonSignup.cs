@@ -49,7 +49,7 @@ public class ButtonSignup : MonoBehaviour
         else
         {
             AuthResult result = registerTask.Result;
-            FirebaseDatabase.DefaultInstance.RootReference.Child("users").Child(result.User.UserId).Child("username").Child(username); 
+            FirebaseDatabase.DefaultInstance.RootReference.Child("users").Child(result.User.UserId).Child("username").SetValueAsync(username);
             Debug.LogFormat("Firebase user created sucessfully: {0} ({1})", result.User.DisplayName, result.User.UserId); 
         }
     }

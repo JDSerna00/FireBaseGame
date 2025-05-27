@@ -1,10 +1,22 @@
 fileFormatVersion: 2
-guid: 81235e1cd3fb5874883aad7840d8c45b
+guid: e6bf349896553be4795b30bc58559e7c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6481899214062053407
-    second: cerrar_0
+      213: 335762117086233158
+    second: material-symbols--eye-tracking-rounded_0
+  - first:
+      213: 4643442163262969845
+    second: material-symbols--eye-tracking-rounded_1
+  - first:
+      213: 4577090806722721769
+    second: material-symbols--eye-tracking-rounded_2
+  - first:
+      213: -2931053492482250851
+    second: material-symbols--eye-tracking-rounded_3
+  - first:
+      213: -8209047740965954483
+    second: material-symbols--eye-tracking-rounded_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +58,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -109,43 +121,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: WebGL
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cerrar_0
+      name: material-symbols--eye-tracking-rounded_0
       rect:
         serializedVersion: 2
-        x: 63
-        y: 63
-        width: 386
-        height: 386
+        x: 20
+        y: 383
+        width: 109
+        height: 109
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +140,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f186d0c1ef454f950800000000000000
-      internalID: 6481899214062053407
+      spriteID: 64245f5ddddd8a400800000000000000
+      internalID: 335762117086233158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: material-symbols--eye-tracking-rounded_1
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 116
+        width: 376
+        height: 280
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f75c54ab02d07040800000000000000
+      internalID: 4643442163262969845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: material-symbols--eye-tracking-rounded_2
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 383
+        width: 110
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e7f96796d7158f30800000000000000
+      internalID: 4577090806722721769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: material-symbols--eye-tracking-rounded_3
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 20
+        width: 109
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d976de2c06ec257d0800000000000000
+      internalID: -2931053492482250851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: material-symbols--eye-tracking-rounded_4
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 20
+        width: 110
+        height: 109
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d4c508fa29a931e80800000000000000
+      internalID: -8209047740965954483
       vertices: []
       indices: 
       edges: []
@@ -164,7 +238,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +248,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cerrar_0: 6481899214062053407
+      material-symbols--eye-tracking-rounded_0: 335762117086233158
+      material-symbols--eye-tracking-rounded_1: 4643442163262969845
+      material-symbols--eye-tracking-rounded_2: 4577090806722721769
+      material-symbols--eye-tracking-rounded_3: -2931053492482250851
+      material-symbols--eye-tracking-rounded_4: -8209047740965954483
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -11,8 +11,9 @@ public class UsersOnline : MonoBehaviour
     [SerializeField] private GameObject alertPrefab;
     [SerializeField] private GameObject userEntryPrefab;
     [SerializeField] private string currentUserId;
-    void Start()
+    void OnEnable()
     {
+        Debug.Log("UsersOnline script started");
         currentUserId = FirebaseAuth.DefaultInstance.CurrentUser?.UserId;
         var reference = FirebaseDatabase.DefaultInstance.GetReference("users-online");
         reference.ChildAdded += HandleChildAdded;
@@ -87,6 +88,7 @@ public class UsersOnline : MonoBehaviour
         }
 
         GameObject alert = Instantiate(alertPrefab, canvas.transform);
+        Debug.Log("Alert instantiated: " + alert.name);
         TextMeshProUGUI textComponent = alert.GetComponentInChildren<TextMeshProUGUI>();
 
         if (textComponent != null)

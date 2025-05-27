@@ -27,18 +27,18 @@ public class AuthStateHandler : MonoBehaviour
         }
     }
 
-    // void Start()
-    // {
-    //     GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
+    void Start()
+    {
+        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
 
-    //     foreach (GameObject obj in allObjects)
-    //     {
-    //         if (obj.name.Contains("(Clone)")) // Checks for Unity's default clone suffix
-    //         {
-    //             Destroy(obj);
-    //         }
-    //     }
-    // }
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name.Contains("(Clone)")) // Checks for Unity's default clone suffix
+            {
+                Destroy(obj);
+            }
+        }
+    }
 
     void Update()
     {
@@ -99,6 +99,8 @@ public class AuthStateHandler : MonoBehaviour
                     {
                         mDatabaseRef.Child("users-online").Child(userId).SetValueAsync(username);
                         Debug.Log("User logged in: " + userId);
+                        var UsersOnline = GetComponent<UsersOnline>();
+                        UsersOnline.enabled = true; // Activar el script UsersOnline
                     }
                 }
             });
