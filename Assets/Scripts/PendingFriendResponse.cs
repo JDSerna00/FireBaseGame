@@ -4,18 +4,23 @@ using UnityEngine;
 
 public class PendingFriendResponse : MonoBehaviour
 {
+    private DatabaseReference mDatabaseRef;
+    private string userId;
 
     void Start()
     {
         if (FirebaseAuth.DefaultInstance.CurrentUser == null)
         {
-
+            Debug.LogWarning("No hay usuario autenticado");
+            return;
         }
-        var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-        var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-        var reference = mDatabaseRef.Child("users").Child(userId).Child("friendResponse");
-        reference.ChildAdded += HandleChildAdded;
-        // reference.ChildAdded += HandleChildRemoved;
+
+        mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
+        userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
+
+        // Escuchar respuestas a las solicitudes del usuario actual
+        mDatabaseRef.Child("users").Child(userId).Child("friendResponse")
+            .ChildAdded += HandleChildAdded;
     }
 
     private async void HandleChildAdded(object sender, ChildChangedEventArgs args)
@@ -26,65 +31,63 @@ public class PendingFriendResponse : MonoBehaviour
             return;
         }
 
-        DataSnapshot snapshot = args.Snapshot;
-        string friendId = snapshot.Key;
-        Debug.Log("Respuesta de" + friendId + "estado:" + snapshot.Value);
-        int estado = int.Parse(snapshot.Value.ToString());
-        var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-        var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-
-        string friendUsername = (await FirebaseDatabase.DefaultInstance.GetReference("users/" + friendId + "/username").GetValueAsync()).Value.ToString();
-
-
-        var cheskRequestId = await (FirebaseDatabase.DefaultInstance.GetReference("users/" + userId + "/SendRequests/" + friendId).GetValueAsync());
-        //Validar si la respuesta es una solicitud pendiente
-        if (cheskRequestId.Value == null)
+        if (FirebaseAuth.DefaultInstance.CurrentUser == null)
         {
-            Debug.Log("Se elimino la solicitud de amistad con id" + friendId);
-            eliminarSolicitud(friendId, "FriendResponse");
+            Debug.LogWarning("Usuario no autenticado, cancelando manejo de respuesta");
             return;
         }
 
-        // // Estado 1 para solicitud aceptada
-        if (estado == 1)
+        string friendId = args.Snapshot.Key;
+        string estadoStr = args.Snapshot.Value?.ToString();
+
+        if (string.IsNullOrEmpty(estadoStr))
         {
-            Debug.Log(friendId + " ha aceptado tu solicitud");
-            mDatabaseRef.Child("users").Child(userId).Child("friends").Child(friendId).SetValueAsync(friendUsername);
+            Debug.LogWarning("Estado inválido en respuesta");
+            return;
         }
 
-        // Estado 2 para solicitud rechazada
-        if (estado == 2)
+        int estado = int.Parse(estadoStr);
+
+        // Verificar si todavía existe la solicitud
+        var checkRequest = await mDatabaseRef.Child("users")
+            .Child(userId)
+            .Child("SendRequests")
+            .Child(friendId)
+            .GetValueAsync();
+
+        if (!checkRequest.Exists)
         {
-            Debug.Log(friendId + " ha rechazado tu solicitud");
+            Debug.Log("Solicitud ya eliminada, limpiando respuesta");
+            eliminarSolicitud(friendId, "friendResponse");
+            return;
         }
+
+        if (estado == 1) // Aceptada
+        {
+            Debug.Log("El usuario " + friendId + " aceptó tu solicitud");
+
+            // Agregar a ambos usuarios como amigos usando solo UID
+            mDatabaseRef.Child("users").Child(userId).Child("friends").Child(friendId).SetValueAsync(true);
+            mDatabaseRef.Child("users").Child(friendId).Child("friends").Child(userId).SetValueAsync(true);
+        }
+        else if (estado == 2) // Rechazada
+        {
+            Debug.Log("El usuario " + friendId + " rechazó tu solicitud");
+        }
+
+        // Eliminar nodos
         eliminarSolicitud(friendId, "SendRequests");
         eliminarSolicitud(friendId, "friendResponse");
-
-    }
-
-    private void HandleChildRemoved(object sender, ChildChangedEventArgs args)
-    {
-        if (args.DatabaseError != null)
-        {
-            Debug.LogError(args.DatabaseError.Message);
-            return;
-        }
-
-        DataSnapshot snapshot = args.Snapshot;
-        Debug.Log(snapshot.Value + "se ha desconectado"); 
-
     }
 
     private void eliminarSolicitud(string requestUserId, string requestMailbox)
     {
-        var mDatabaseRe = FirebaseDatabase.DefaultInstance.RootReference;
-        var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
+        if (string.IsNullOrEmpty(userId)) return;
 
-        mDatabaseRe.Child("users")
+        mDatabaseRef.Child("users")
             .Child(userId)
-            .Child("SendRequests")
+            .Child(requestMailbox)
             .Child(requestUserId)
-            .SetValueAsync(null);
+            .RemoveValueAsync();
     }
-
 }

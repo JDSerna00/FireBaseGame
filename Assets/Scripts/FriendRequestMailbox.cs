@@ -1,55 +1,103 @@
-using System;
+using System.Collections.Generic;
 using Firebase.Auth;
 using Firebase.Database;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class FriendRequestMailbox : MonoBehaviour
 {
     [SerializeField] private GameObject friendRequestItemPrefab;
     [SerializeField] private Transform friendRequestPanelContent;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void OnEnable()
+
+    private DatabaseReference _requestsRef;
+    private Dictionary<string, GameObject> requestItems = new Dictionary<string, GameObject>();
+
+    private string currentUserId;
+    private bool isSubscribed = false;
+
+    void Start()
     {
-        Debug.Log("OnEnable");
-        if (FirebaseAuth.DefaultInstance.CurrentUser != null)
-        {
-            var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-            var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-            var reference = mDatabaseRef.Child("users").Child(userId).Child("friendRequests");
-            reference.ChildAdded += HandleChildAdded;
-        }
+        TrySubscribeToUserRequests();
     }
-    
-    private void OnDisable()
+
+    void Update()
     {
-        Debug.Log("OnDisable");
-        if (FirebaseAuth.DefaultInstance.CurrentUser != null)
+        // Si el usuario cambió (logout/login), resuscribirse
+        string newUserId = FirebaseAuth.DefaultInstance.CurrentUser?.UserId;
+
+        if (newUserId != currentUserId)
         {
-            var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
-            var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
-            var reference = mDatabaseRef.Child("users").Child(userId).Child("friendRequests");
-            reference.ChildAdded -= HandleChildAdded;
+            Debug.Log("Cambio de usuario detectado.");
+            UnsubscribeFromRequests();
+            currentUserId = newUserId;
+            TrySubscribeToUserRequests();
         }
     }
 
+    private void TrySubscribeToUserRequests()
+    {
+        if (string.IsNullOrEmpty(currentUserId))
+        {
+            Debug.LogWarning("No hay un usuario logueado.");
+            return;
+        }
 
-    private void HandleChildAdded(object sender, ChildChangedEventArgs args)
+        _requestsRef = FirebaseDatabase.DefaultInstance
+            .GetReference("users")
+            .Child(currentUserId)
+            .Child("friendRequests");
+
+        _requestsRef.ValueChanged += OnFriendRequestsChanged;
+        isSubscribed = true;
+
+        Debug.Log("Mailbox suscrito a: " + currentUserId);
+    }
+
+    private void UnsubscribeFromRequests()
+    {
+        if (_requestsRef != null && isSubscribed)
+        {
+            _requestsRef.ValueChanged -= OnFriendRequestsChanged;
+            Debug.Log("Mailbox desuscrito de: " + currentUserId);
+        }
+
+        ClearRequestItems();
+        isSubscribed = false;
+    }
+
+    private void OnFriendRequestsChanged(object sender, ValueChangedEventArgs args)
     {
         if (args.DatabaseError != null)
         {
-            Debug.LogError(args.DatabaseError.Message);
+            Debug.LogError("Error al leer solicitudes: " + args.DatabaseError.Message);
             return;
         }
-        string friendUserId = args.Snapshot.Key;
-        Debug.Log("Solicitud de amistad recibida de: " + friendUserId);
 
-        GameObject newRequest = Instantiate(friendRequestItemPrefab, friendRequestPanelContent);
-        newRequest.transform.localScale = Vector3.one;
-        Debug.Log("Instanciado"); 
-        var requestUI = newRequest.GetComponent<FriendRequestUIItem>();
-        requestUI.Initialize(friendUserId, friendRequestPanelContent, friendRequestItemPrefab);
+        ClearRequestItems();
 
+        if (args.Snapshot.Exists && args.Snapshot.HasChildren)
+        {
+            foreach (var child in args.Snapshot.Children)
+            {
+                string senderId = child.Key;
+                GameObject requestGO = Instantiate(friendRequestItemPrefab, friendRequestPanelContent);
+                requestGO.GetComponent<FriendRequestUIItem>().Initialize(senderId, friendRequestPanelContent, friendRequestItemPrefab);
+                requestItems[senderId] = requestGO;
+            }
+        }
     }
 
+    private void ClearRequestItems()
+    {
+        foreach (var item in requestItems.Values)
+        {
+            Destroy(item);
+        }
+
+        requestItems.Clear();
+    }
+
+    private void OnDisable()
+    {
+        UnsubscribeFromRequests();
+    }
 }

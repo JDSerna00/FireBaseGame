@@ -22,7 +22,6 @@ public class ButtonSendFriendRequest : MonoBehaviour
     private void HandleSendRequestButtonClicked()
     {
         string friendUserId = _frienUserIdInputField.text;
-
         var mDatabaseRef = FirebaseDatabase.DefaultInstance.RootReference;
         var userId = FirebaseAuth.DefaultInstance.CurrentUser.UserId;
         var username = PlayerPrefs.GetString("username");

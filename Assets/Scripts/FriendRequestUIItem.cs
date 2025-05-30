@@ -11,6 +11,7 @@ public class FriendRequestUIItem : MonoBehaviour
 
     public void Initialize(string userId, Transform container, GameObject prefab)
     {
+        Debug.Log("Inicializando solicitud de: " + userId);
         textUserId.text = $"Solicitud de: {userId}";
         inputUserId.text = userId;
 
